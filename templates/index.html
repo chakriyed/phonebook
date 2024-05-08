@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PhoneBook</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+    <header>
+        <h1>PhoneBook</h1>
+    </header>
+
+    <main class="container">
+        <section class="contacts">
+            <h2>All Contacts</h2>
+            <ul>
+                {% for contact in contacts %}
+                    <li>
+                        <span class="contact-id">ID: {{ contact[0] }}</span>
+                        <span class="contact-name">Name: {{ contact[1] }}</span>
+                        <span class="contact-phone">Phone: {{ contact[2] }}</span>
+                        <span class="contact-email">Email: {{ contact[3] }}</span>
+                        <span class="contact-birthday">birthday: {{ contact[4] }}</span>
+                    </li>
+                {% endfor %}
+            </ul>
+        </section>
+
+        <section class="actions" id="add-contact">
+            <h2>Add Contact</h2>
+            <form action="/add" method="post">
+                <input type="text" name="name" placeholder="Name" required>
+                <input type="tel" name="phone" placeholder="Phone" required>
+                <input type="text" name="email" placeholder="Email ID">
+                <input type="date" name="birthday" placeholder="Birthday">
+                <button type="submit"><i class="fas fa-plus-circle"></i> Add Contact</button>
+            </form>
+        </section>
+
+        <section class="actions">
+            <h2>Update Contact</h2>
+            <form action="/update" method="post">
+                <input type="text" name="name" placeholder="Name">
+                <input type="tel" name="phone" placeholder="New Phone">
+                <input type="text" name="email" placeholder="Email ID">
+                <input type="date" name="birthday" placeholder="Birthday">
+                <button type="submit"><i class="fas fa-edit"></i> Update Contact</button>
+            </form>
+        </section>
+
+        <section class="actions">
+            <h2>Delete Contact</h2>
+            <form action="/delete" method="post">
+                <input type="text" name="name" placeholder="Name" required>
+                <button type="submit"><i class="fas fa-trash"></i> Delete Contact</button>
+            </form>
+        </section>
+
+        <section class="search" id="search">
+            <h2>Search Contact</h2>
+            <form action="/search" method="get">
+                <input type="text" name="query" placeholder="Search..." id="search-input">
+                <button type="submit"><i class="fas fa-search"></i> Search</button>
+            </form>
+        </section>
+
+        <section id="search-results">
+            </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Contacts Management</p>
+    </footer>
+
+    <script>
+        document.querySelector('form[action="/search"]').addEventListener('submit', function(event) {
+            event.preventDefault();
+            fetch(`/search?query=${document.querySelector('input[name="query"]').value}`)
+                .then(response => response.json())
+                .then(data => {
+                    const resultsDiv = document.getElementById('search-results');
+                    resultsDiv.innerHTML = '';
+                    data.forEach(contact => {
+                        const listItem = document.createElement('li');
+                        listItem.textContent = `ID: ${contact[0]},
+                                                Name: ${contact[1]},
+                                                Phone: ${contact[2]}, 
+                                                Email: ${contact[3]}, 
+                                                Birthday: ${contact[4]}`;
+                        resultsDiv.appendChild(listItem);
+                    });
+                });
+        });
+    </script>
+</body>
+</html>
